@@ -1,18 +1,47 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import Footer from '../Footer/Footer'
 import Header from '../Header/header'
 import { useForm } from "react-hook-form"
+import axios from 'axios'
+import toast from 'react-hot-toast'
 
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const form = location.state?.from?.pathname || '/';
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm()
+  } = useForm();
 
-  const onSubmit = (data) => console.log(data)
+  const onSubmit = async (data) => {
+    const userInfo = {
+      fullname: data.fullname,
+      email: data.email,
+      password: data.password,
+    };
+
+    try {
+      const res = await axios.post('http://localhost:3000/user/signup', userInfo);
+      console.log(res.data);
+      if (res.data) {
+        toast.success('SignUp Successful');
+        navigate(form, { replace: true });
+        setTimeout(() => {
+          window.location.reload();
+
+        }, 2000);
+      }
+      localStorage.setItem('bookUsers', JSON.stringify(res.data));
+    } catch (err) {
+      console.log(err);
+      toast.error('User Already Exists');
+    }
+  };
   return (
     <>
       <Header />
@@ -38,8 +67,8 @@ const SignUp = () => {
                     <path
                       d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
                   </svg>
-                  <input {...register("name", { required: true })} type="text" className="grow" placeholder="Enter Your Full Name" />
-                  {errors.name && <span className='text-sm text-red-500'>This field is required</span>}
+                  <input {...register("fullname", { required: true })} type="text" className="grow" placeholder="Enter Your Full Name" />
+                  {errors.fullname && <span className='text-sm text-red-500'>This field is required</span>}
                 </label>
                 <br />
                 <label className="input input-bordered flex items-center gap-2">
@@ -68,7 +97,7 @@ const SignUp = () => {
                       d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
                       clipRule="evenodd" />
                   </svg>
-                  <input {...register("password", { required: true })} placeholder='Enter Your Password' type="password" className="grow" />
+                  <input {...register("password", { required: true })} placeholder='Enter Your Password' type="password" className="grow  text-black" />
                   {errors.password && <span className='text-sm text-red-500'>This field is required</span>}
                 </label>
                 <div className='flex justify-around mt-4'>

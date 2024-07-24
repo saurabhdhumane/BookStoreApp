@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import Login from '../Login/Login';
+import Logout from '../Logout/Logout';
+import { useAuth } from '../../context/Auth';
 
 const header = () => {
+
+    const [authUser, setAuthUser] = useAuth()
+
 
     const [theme, setTheme] = useState(localStorage.getItem('theme') ? localStorage.getItem('theme') : "light");
 
@@ -64,7 +69,7 @@ const header = () => {
                             </div>
                             <ul
                                 tabIndex={0}
-                                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                                className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow dark:bg-slate-900 dark:text-white">
                                 {navItems}
                             </ul>
                         </div>
@@ -119,10 +124,14 @@ const header = () => {
                                 </svg>
                             </label>
                         </div>
-                        <div className="">
-                            <a className="bg-black text-white px-3 py-2 rounded-md hover:bg-slate-800 duration-300 cursor-pointer" onClick={() => document.getElementById('my_modal_3').showModal()}>Login</a>
-                        </div>
-                        <Login />
+                        {
+                            authUser ? <Logout /> : <div className="">
+                                <a className="bg-black text-white px-3 py-2 rounded-md hover:bg-slate-800 duration-300 cursor-pointer" onClick={() => document.getElementById('my_modal_3').showModal()}>Login</a>
+                                <Login />
+
+                            </div>
+                        }
+
                     </div>
 
                 </div>
